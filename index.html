@@ -88,7 +88,7 @@
                 }
             })
             // console.log(quotes);
-            element = `<center><h1 style='text-transform:uppercase;'>${data.name}</h1></center><table><tr><td><img src='${data.img}' width=400px height=400px></td><td><ul><li><b>Born on</b>: ${data.birthday}</li><li><b>Occupation</b>: ${data.occupation}</li><li><b>Status</b>: ${data.status}</li><li><b>Nickname</b>: ${data.nickname}</li><li><b>Potrayed:</b> ${data.portrayed}</li><li><b>Quotes:</b> `;
+            element = `<center><h1 style='text-transform:uppercase;'>${data.name}</h1></center><table><tr><td><img src='${data.img}' width=400px height=400px></td><td><ul><li><b>Born on</b>: ${data.birthday}</li><li><b>Occupation</b>: ${data.occupation}</li><li><b>Status</b>: ${data.status}</li><li><b>Nickname</b>: ${data.nickname}</li><li><b>Potrayed:</b> ${data.portrayed}</li><li><b>Appearance season:</b> ${data.appearance}</li><li><b>Quotes:</b> `;
             text = JSON.parse(JSON.stringify(quotes)).split('\n');
             if(text.length-1==0) element+='<artile>Nothing to show</article>';
             for(let i=0;i<text.length-1;i++){
