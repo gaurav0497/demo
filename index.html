@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .pagination button {
+                color: black;
+                float: left;
+                padding: 8px 16px;
+                text-decoration: none;
+                transition: background-color .3s;
+            }
+
+            .pagination button.active {
+                background-color: dodgerblue;
+                color: white;
+            }
+            .pagination button:hover:not(.active) {background-color: #ddd;}
+        </style>
+    </head>
+    <body>
+        <center><h1>List of bad characters</h1></center>
+        <button style="float: right;" onclick="loadData(url,1)">Sort by name</button>
+        <div id="characters"></div>
+        <div class="pagination" style="float: right;">
+            <button onclick="updatePage(0) " class="active" id="bt1">1</button>
+            <button onclick="updatePage(10)" id="bt2">2</button>
+            <button onclick="updatePage(20)" id="bt3">3</button>
+            <button onclick="updatePage(30)" id="bt4">4</button>
+            <button onclick="updatePage(40)" id="bt5">5</button>
+            <button onclick="updatePage(50)" id="bt6">6</button>
+            <button onclick="updatePage(60)" id="bt7">7</button>
+        </div>
+    </body>
+    <script>
+    var last = 1;
+    var url  = `https://www.breakingbadapi.com/api/characters?limit=10&offset=0`;
+    var flag = 0;
+    loadData(url,flag);
+
+    function updatePage(page){
+        url = `https://www.breakingbadapi.com/api/characters?limit=10&offset=${page}`;
+        let curr = parseInt(page)/10+1;
+        document.getElementById(`bt${curr}`).className='active';
+        document.getElementById(`bt${last}`).classList.remove('active');
+        last = curr;
+        loadData(url,flag);
+    }
+    
+    function sortByProperty(property){  
+        return function(a,b){  
+            if(a[property] > b[property])  
+                return 1;  
+            else if(a[property] < b[property])  
+                return -1;  
+            return 0;  
+        }  
+    }
+
+    function loadData(url,flag){
+    fetch(url)
+    .then(result => result.json())
+    .then((result)=>{
+        if (flag==1)
+            result.sort(sortByProperty('name'));
+        let characters = document.getElementById('characters');
+        characters.innerHTML = '';
+        for(let i=0;i<result.length;i++){
+            characters.innerHTML += `<ul><li>Name: ${result[i].name}</li><li>Occupation: ${result[i].occupation}</li><li>Birthday: ${result[i].birthday}</li><li>Status: ${result[i].status}</li><li><button onclick='loadCharacter(${result[i].char_id})'>Click to view</button></li></ul>`;
+        }
+    }).catch(err=>console.log(err));
+    }
+
+    function loadCharacter(num){
+        let body = document.querySelector('body');
+        var  quotes='';
+        let element = '';
+        body.innerHTML = '';
+        fetch('https://www.breakingbadapi.com/api/characters/'+num)
+        .then(response => response.json())
+        .then(async response => { 
+            console.log(response[0]);
+            data = response[0];
+            await fetch(`https://breakingbadapi.com/api/quote?author=${data.name}`)
+            .then(response => response.json())
+            .then(response=>{
+                for(let i=0;i<response.length;i++)
+                { quotes += response[i].quote+'\n';
+                }
+            })
+            // console.log(quotes);
+            element = `<center><h1 style='text-transform:uppercase;'>${data.name}</h1></center><table><tr><td><img src='${data.img}' width=400px height=400px></td><td><ul><li><b>Born on</b>: ${data.birthday}</li><li><b>Occupation</b>: ${data.occupation}</li><li><b>Status</b>: ${data.status}</li><li><b>Nickname</b>: ${data.nickname}</li><li><b>Potrayed:</b> ${data.portrayed}</li><li><b>Quotes:</b> `;
+            text = JSON.parse(JSON.stringify(quotes)).split('\n');
+            for(let i=0;i<text.length-1;i++){
+                element+='<article>\''+text[i]+'\'</article>';
+            }
+            element += `</li></ul></td></tr></table>`;
+            body.innerHTML = element;
+        }).catch(err=>console.log(err));
+    };
+
+</script>
+</html>
