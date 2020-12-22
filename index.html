@@ -21,6 +21,7 @@
         <center><h1>List of bad characters</h1></center>
         <button style="float: right;" onclick="loadData(url,1)">Sort by name</button>
         <div id="characters"></div>
+        <!-- This is pagination part -->
         <div class="pagination" style="float: right;">
             <button onclick="updatePage(0) " class="active" id="bt1">1</button>
             <button onclick="updatePage(10)" id="bt2">2</button>
@@ -32,20 +33,21 @@
         </div>
     </body>
     <script>
+    // Intializing with first page  
     var last = 1;
     var url  = `https://www.breakingbadapi.com/api/characters?limit=10&offset=0`;
     var flag = 0;
     loadData(url,flag);
-
+    // This is for updating page whenever we click on next page.
     function updatePage(page){
         url = `https://www.breakingbadapi.com/api/characters?limit=10&offset=${page}`;
-        let curr = parseInt(page)/10+1;
-        document.getElementById(`bt${curr}`).className='active';
-        document.getElementById(`bt${last}`).classList.remove('active');
+        let curr = parseInt(page)/10+1; // Getting page number
+        document.getElementById(`bt${curr}`).className='active';  // setting active class to current page
+        document.getElementById(`bt${last}`).classList.remove('active');  //remove active class from last page
         last = curr;
         loadData(url,flag);
     }
-    
+    // This is for applying sorting using property like name.
     function sortByProperty(property){  
         return function(a,b){  
             if(a[property] > b[property])  
@@ -55,9 +57,9 @@
             return 0;  
         }  
     }
-
+    // This is for loading data on current page.
     function loadData(url,flag){
-    fetch(url)
+    fetch(url)   // for getting data from specific url
     .then(result => result.json())
     .then((result)=>{
         if (flag==1)
@@ -69,7 +71,7 @@
         }
     }).catch(err=>console.log(err));
     }
-
+    // This function is for showing character information.
     function loadCharacter(num){
         let body = document.querySelector('body');
         var  quotes='';
@@ -80,14 +82,13 @@
         .then(async response => { 
             console.log(response[0]);
             data = response[0];
-            await fetch(`https://breakingbadapi.com/api/quote?author=${data.name}`)
+            await fetch(`https://breakingbadapi.com/api/quote?author=${data.name}`) //for getting quotes using name of author using async and await so that that data is available to display.
             .then(response => response.json())
             .then(response=>{
                 for(let i=0;i<response.length;i++)
                 { quotes += response[i].quote+'\n';
                 }
             })
-            // console.log(quotes);
             element = `<center><h1 style='text-transform:uppercase;'>${data.name}</h1></center><table><tr><td><img src='${data.img}' width=400px height=400px></td><td><ul><li><b>Born on</b>: ${data.birthday}</li><li><b>Occupation</b>: ${data.occupation}</li><li><b>Status</b>: ${data.status}</li><li><b>Nickname</b>: ${data.nickname}</li><li><b>Potrayed:</b> ${data.portrayed}</li><li><b>Appearance season:</b> ${data.appearance}</li><li><b>Quotes:</b> `;
             text = JSON.parse(JSON.stringify(quotes)).split('\n');
             if(text.length-1==0) element+='<artile>Nothing to show</article>';
@@ -95,7 +96,7 @@
                 element+='<article>\''+text[i]+'\'</article>';
             }
             element += `</li></ul></td></tr></table>`;
-            body.innerHTML = element;
+            body.innerHTML = element;  // adding created element on body using innerhtml property.
         }).catch(err=>console.log(err));
     };
 
